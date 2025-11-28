@@ -1,247 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>I love you, Chara</title>
-
-<!-- Google Fonts: Dancing Script -->
-<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-
+<title>Login — For Chara</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 body {
-    margin: 0;
-    font-family: 'Dancing Script', cursive;
-    background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
-    color: #333;
-    overflow: hidden;
-    height: 100vh;
-    position: relative;
+  margin:0; padding:0; font-family:'Poppins',sans-serif;
+  background: linear-gradient(135deg,#ff9ac9,#ffe3f2);
+  height:100vh; display:flex; justify-content:center; align-items:center;
+  flex-direction:column;
 }
-
-/* Floating hearts background */
-.heart-bg {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    background: rgba(255,107,129,0.7);
-    transform: rotate(45deg);
-    border-radius: 50%;
-    pointer-events: none;
-    animation: floatUp 6s linear infinite;
-    z-index: 0;
+.container {
+  background:#ffffffee; padding:24px; border-radius:18px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.12); text-align:center; max-width:360px; width:90%;
 }
-.heart-bg::before, .heart-bg::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    background: rgba(255,107,129,0.7);
-    border-radius: 50%;
-    position: absolute;
+h1 {font-family:'Dancing Script',cursive; color:#d6336c; margin-bottom:18px;}
+input {padding:10px 14px; width:80%; border-radius:12px; border:2px solid #ff80b3; margin-bottom:12px; font-size:16px;}
+button {padding:10px 18px; background:#ff4d88; color:white; border:none; border-radius:24px; cursor:pointer; font-weight:600; transition:transform .2s;}
+button:hover{transform:translateY(-2px);}
+.error-msg {
+  background:#ff4d88; color:white; padding:8px 12px;
+  border-radius:12px; margin-bottom:12px; font-family:'Dancing Script',cursive;
+  display:none; transition:opacity .2s; opacity:0;
 }
-.heart-bg::before { top: -10px; left: 0; }
-.heart-bg::after { left: -10px; top: 0; }
-
-@keyframes floatUp {
-    0% { transform: translateY(100vh) scale(0.8); opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { transform: translateY(-50px) scale(1); opacity: 0; }
+#preloader {
+  position:fixed; top:0; left:0; width:100%; height:100%; background:#ffe3f2;
+  display:flex; justify-content:center; align-items:center; font-family:'Dancing Script',cursive;
+  font-size:22px; color:#d6336c; flex-direction:column; opacity:0; pointer-events:none; transition:opacity .3s;
 }
-
-/* Preloader overlay */
-#preloader, #loaderCorrect {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    z-index: 9999;
-}
-
-/* Floating hearts in preloader */
-#preloader div.heart, #loaderCorrect div.heart {
-    font-size: 28px;
-    margin: 5px;
-    animation: floatHeart 1.5s ease-in-out infinite alternate;
-}
-@keyframes floatHeart {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-20px); }
-}
-
-/* Main container */
-#mainContent {
-    display: none;
-    max-width: 420px;
-    margin: 60px auto;
-    background: rgba(255,255,255,0.95);
-    padding: 35px 30px;
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-/* Heading */
-#mainContent h1 {
-    color: #ff6b81;
-    margin-bottom: 20px;
-    font-size: 36px;
-}
-
-/* Password input */
-#passwordInput {
-    padding: 12px;
-    font-size: 20px;
-    border-radius: 12px;
-    border: 2px solid #ff6b81;
-    margin-top: 15px;
-    width: 80%;
-}
-
-/* Submit button */
-#submitBtn {
-    margin-top: 20px;
-    padding: 12px 25px;
-    font-size: 20px;
-    border: none;
-    border-radius: 12px;
-    background: #ff6b81;
-    color: white;
-    cursor: pointer;
-    transition: 0.3s;
-}
-#submitBtn:hover { transform: scale(1.05); }
-
-/* Hint text */
-#hint {
-    margin-top: 12px;
-    font-size: 16px;
-    color: #ff6b81;
-}
-
-/* Error box */
-#errorBox {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(255, 120, 120, 0.95);
-    color: white;
-    padding: 18px 28px;
-    border-radius: 15px;
-    font-family: 'Dancing Script', cursive;
-    font-size: 22px;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(255, 80, 80, 0.7);
-    opacity: 0;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: opacity 0.4s ease;
-}
-
-/* Heart icon wiggle */
-#errorBox .heart {
-    animation: heartbeat 1s infinite;
-    font-size: 26px;
-}
-@keyframes heartbeat {
-    0% { transform: scale(1); }
-    20% { transform: scale(1.3); }
-    40% { transform: scale(1); }
-    60% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
+.heart {font-size:48px; margin-bottom:12px; animation:beat 1s infinite alternate;}
+@keyframes beat {0%{transform:scale(1);}100%{transform:scale(1.2);}}
 </style>
 </head>
 <body>
 
-<!-- Floating hearts in background -->
-<script>
-for(let i=0;i<15;i++){
-    let heart = document.createElement('div');
-    heart.className = 'heart-bg';
-    heart.style.left = Math.random() * 100 + 'vw';
-    heart.style.animationDuration = 4 + Math.random()*3 + 's';
-    heart.style.width = heart.style.height = 10 + Math.random()*20 + 'px';
-    document.body.appendChild(heart);
-}
-</script>
-
-<!-- Initial Preloader -->
 <div id="preloader">
-    <div>Chara, I hope you'll like this </div>
-    <div style="display:flex; gap:6px; margin-top:20px;">
-        <div class="heart">❤️</div>
-        <div class="heart">💖</div>
-        <div class="heart">❤️</div>
-        <div class="heart">💖</div>
-    </div>
+  <div class="heart">❤️</div>
+  I love you Chara, I hope you like this
 </div>
 
-<!-- Correct password loader -->
-<div id="loaderCorrect" style="display:none;">
-    <div>I miss you so much</div>
-    <div style="display:flex; gap:6px; margin-top:20px;">
-        <div class="heart">❤️</div>
-        <div class="heart">💖</div>
-        <div class="heart">❤️</div>
-        <div class="heart">💖</div>
-    </div>
-</div>
-
-<!-- Main content -->
-<div id="mainContent">
-    <h1>I love you Chara 💖</h1>
-    <p>Enter the password to open your special page:</p>
-    <input type="password" id="passwordInput" placeholder="Enter password">
-    <br>
-    <button id="submitBtn">Enter</button>
-    <div id="hint">Password Hint: It's your beautiful name</div>
-</div>
-
-<!-- Error box -->
-<div id="errorBox">
-    <span class="heart">❤</span>
-    Wrong password, it's your beautiful full first name.
+<div class="container">
+  <h1>Welcome Chara 💖</h1>
+  <div class="error-msg" id="errorMsg">Wrong password! 😔</div>
+  <input type="password" id="password" placeholder="Enter Password" />
+  <div style="font-size:14px; margin-bottom:12px; color:#d6336c;">Hint: it's your beautiful name 💕</div>
+  <button onclick="checkPassword()">Login</button>
 </div>
 
 <script>
-// Show initial content after 3 seconds
-setTimeout(() => {
-    document.getElementById('preloader').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-}, 3000);
+function checkPassword(){
+  const passwordInput = document.getElementById('password').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
 
-// Password check
-document.getElementById('submitBtn').addEventListener('click', () => {
-    const password = document.getElementById('passwordInput').value.toLowerCase();
+  if(passwordInput === "Charanitte"){
+    // correct password → show preloader
+    const preloader = document.getElementById('preloader');
+    preloader.style.opacity = 1;
+    preloader.style.pointerEvents = 'auto';
 
-    if(password === 'charanitte'){
-        // Show correct loader
-        document.getElementById('mainContent').style.display = 'none';
-        const loader = document.getElementById('loaderCorrect');
-        loader.style.display = 'flex';
+    setTimeout(()=>{
+      window.location.href = "./main.html";  // redirect to page2
+    }, 1800); // 1.8 seconds loading
+  } else {
+    // show error
+    errorMsg.style.display = 'block';
+    errorMsg.style.opacity = 1;
+    setTimeout(()=>{
+      errorMsg.style.opacity = 0;
+      setTimeout(()=>{ errorMsg.style.display = 'none'; }, 250);
+    }, 2000); // visible for 2 seconds
+  }
+}
 
-        setTimeout(() => {
-            window.location.href = 'main.html';
-        }, 2500); // 2.5s loader
-    } else {
-        // Show error message
-        const errorBox = document.getElementById('errorBox');
-        errorBox.style.opacity = "1";
-        setTimeout(() => {
-            errorBox.style.opacity = "0";
-        }, 2000); // stays 2 seconds
-    }
+// Optional: Enter key triggers login
+document.getElementById('password').addEventListener('keyup', function(e){
+  if(e.key === 'Enter') checkPassword();
 });
 </script>
 
