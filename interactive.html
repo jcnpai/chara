@@ -6,25 +6,54 @@
 <title>Interactive Page — For Chara</title>
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 <style>
-body {margin:0; padding:0; font-family:'Poppins',sans-serif; background:linear-gradient(135deg,#ff9ac9,#ffe3f2);}
-.container {max-width:720px; margin:40px auto; padding:20px; background:#ffffffee; border-radius:16px; text-align:center;}
-h1 {font-family:'Dancing Script',cursive; color:#d6336c;}
-.mood {padding:10px 16px; margin:6px; border-radius:24px; display:inline-block; background:#fff; border:2px solid transparent; cursor:pointer;}
-.mood.selected {border-color:#ff4d88;}
-textarea {width:90%; height:100px; margin-top:12px; border-radius:12px; border:2px solid #ff80b3; padding:8px; font-size:15px;}
-.btn {padding:10px 18px; background:#ff4d88; color:white; border:none; border-radius:24px; cursor:pointer; margin-top:8px;}
-#fwPosts {margin-top:20px; text-align:left; max-height:200px; overflow:auto;}
-.fw-post {background:#fff; padding:10px; border-radius:10px; margin-bottom:8px;}
-.fw-post time {color:#ff6b81; font-weight:600; font-size:13px;}
-.floating-heart {position:fixed; top:20%; left:10%; font-size:50px; cursor:pointer;}
+body {
+  margin: 0;
+  padding: 0;
+  font-family:'Poppins',sans-serif;
+  background: linear-gradient(135deg,#ff9ac9,#ffe3f2);
+  min-height: 100vh;
+}
+.container {
+  max-width:720px;
+  margin:40px auto;
+  padding:25px;
+  background:#ffffffee;
+  border-radius:16px;
+  text-align:center;
+  position:relative;
+}
+h1 {font-family:'Dancing Script',cursive;color:#d6336c;}
+.dev-msg {
+  position:absolute;
+  top:-40px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#ff4d88;
+  color:white;
+  padding:10px 16px;
+  border-radius:12px;
+  font-family:'Dancing Script',cursive;
+  font-size:16px;
+  box-shadow:0 6px 12px rgba(0,0,0,0.15);
+}
+.mood {padding:10px 16px;margin:6px;border-radius:24px;display:inline-block;background:#fff;border:2px solid transparent;cursor:pointer;transition:0.2s;}
+.mood.selected {border-color:#ff4d88;transform:scale(1.1);}
+.chart-wrap {width:100%;max-width:640px;margin:10px auto;}
+canvas {max-width:100%;}
+textarea {width:90%;height:100px;margin-top:12px;border-radius:12px;border:2px solid #ff80b3;padding:8px;font-size:15px;}
+.btn {padding:10px 18px;background:#ff4d88;color:white;border:none;border-radius:24px;cursor:pointer;margin-top:8px;}
+#fwPosts {margin-top:20px;text-align:left;max-height:200px;overflow:auto;}
+.fw-post {background:#fff;padding:10px;border-radius:10px;margin-bottom:8px;}
+.fw-post time {color:#ff6b81;font-weight:600;font-size:13px;}
+.floating-heart {position:fixed; top:20%; left:10%; font-size:50px; cursor:pointer; user-select:none;}
 .love-message {position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:white; padding:16px; border-radius:12px; font-family:'Dancing Script',cursive; font-size:20px; color:#ff2e6c; display:none;}
 </style>
 </head>
 <body>
 
 <div class="container">
+  <div class="dev-msg">Still under development. Di pa sya tapos kasi wala pang database 🥺</div>
   <h1>How are you feeling today, Chara?</h1>
   <div id="moodSection">
     <div class="mood" data-mood="Happy">😊 Happy</div>
@@ -34,8 +63,10 @@ textarea {width:90%; height:100px; margin-top:12px; border-radius:12px; border:2
     <div class="mood" data-mood="Calm">😌 Calm</div>
   </div>
 
-  <h2>Mood History</h2>
-  <canvas id="moodChart" height="120"></canvas>
+  <h2>Your Mood Preview</h2>
+  <div class="chart-wrap">
+    <canvas id="moodChart" height="120"></canvas>
+  </div>
 
   <h2>Freedom Wall</h2>
   <textarea id="fwInput" placeholder="Write anything you feel, Chara…"></textarea><br>
@@ -47,79 +78,56 @@ textarea {width:90%; height:100px; margin-top:12px; border-radius:12px; border:2
 <div id="loveMessage" class="love-message">I love you always, Chara ❤️</div>
 
 <script>
-  // Supabase config
-  const SUPABASE_URL = 'https://fhkixsmfjbvwtjrxhbqh.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoa2l4c21mamJ2d3RqcnhoYnFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMzg5OTgsImV4cCI6MjA3OTkxNDk5OH0.St5pnyKRpNgBxg7GAyb9HYRmgBRcsL1o0Wa6QUoqJ3Q';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const moodButtons = document.querySelectorAll('.mood');
+const moodChartCtx = document.getElementById('moodChart').getContext('2d');
+const moodLabels = ['Happy','Sad','Excited','Stressed','Calm'];
+let moodCounts = [0,0,0,0,0];
 
-  // Mood Tracker
-  const moodButtons = document.querySelectorAll('.mood');
-  const moodChartCtx = document.getElementById('moodChart').getContext('2d');
-  const moodLabels = ['Happy','Sad','Excited','Stressed','Calm'];
-  let moodCounts = [0,0,0,0,0];
-  const moodChart = new Chart(moodChartCtx, {
-    type: 'bar',
-    data: { labels: moodLabels, datasets:[{label:'Times selected', data:moodCounts, backgroundColor:['#ff80b3','#ff99cc','#ff66a3','#ff4d88','#ffb3d9'], borderRadius:8}]},
-    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
-  });
+const moodChart = new Chart(moodChartCtx, {
+  type: 'bar',
+  data: { labels: moodLabels, datasets:[{label:'Times clicked', data:moodCounts, backgroundColor:['#ff80b3','#ff99cc','#ff66a3','#ff4d88','#ffb3d9'], borderRadius:8}]},
+  options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+});
 
-  async function updateMoodChart(){
-    const {data,error} = await supabase.from('moods').select('*');
-    if(error){console.error(error); return;}
-    const counts={Happy:0,Sad:0,Excited:0,Stressed:0,Calm:0};
-    data.forEach(d=>{if(d.mood && counts[d.mood]!==undefined) counts[d.mood]++;});
-    moodChart.data.datasets[0].data = moodLabels.map(l=>counts[l]);
+// Mood click simulation (no database)
+moodButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const mood = btn.dataset.mood;
+    btn.classList.toggle('selected');
+    const idx = moodLabels.indexOf(mood);
+    if(idx>=0) moodCounts[idx]++;
+    moodChart.data.datasets[0].data = moodCounts;
     moodChart.update();
-  }
-
-  moodButtons.forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const mood = btn.dataset.mood;
-      btn.classList.toggle('selected');
-      await supabase.from('moods').insert([{mood:mood}]);
-      updateMoodChart();
-    });
   });
+});
 
-  updateMoodChart();
+// Freedom Wall (no database)
+const fwInput = document.getElementById('fwInput');
+const fwSubmit = document.getElementById('fwSubmit');
+const fwPosts = document.getElementById('fwPosts');
+fwSubmit.addEventListener('click', ()=>{
+  const text = fwInput.value.trim();
+  if(!text) return;
+  const postDiv = document.createElement('div');
+  postDiv.className = 'fw-post';
+  const time = document.createElement('time');
+  time.textContent = new Date().toLocaleString();
+  postDiv.appendChild(time);
+  const p = document.createElement('div');
+  p.textContent = text;
+  postDiv.appendChild(p);
+  fwPosts.prepend(postDiv);
+  fwInput.value='';
+});
 
-  // Freedom Wall
-  const fwInput = document.getElementById('fwInput');
-  const fwSubmit = document.getElementById('fwSubmit');
-  const fwPosts = document.getElementById('fwPosts');
-
-  async function loadFWPosts(){
-    const {data,error} = await supabase.from('freedomWall').select('*').order('created_at',{ascending:false});
-    if(error){console.error(error); return;}
-    fwPosts.innerHTML='';
-    data.forEach(d=>{
-      const el = document.createElement('div');
-      el.className='fw-post';
-      const time = document.createElement('time');
-      time.textContent = new Date(d.created_at).toLocaleString();
-      el.appendChild(time);
-      const p = document.createElement('div'); p.textContent = d.text; el.appendChild(p);
-      fwPosts.appendChild(el);
-    });
-  }
-
-  fwSubmit.addEventListener('click', async ()=>{
-    const text = fwInput.value.trim();
-    if(!text) return;
-    await supabase.from('freedomWall').insert([{text:text}]);
-    fwInput.value='';
-    loadFWPosts();
-  });
-
-  loadFWPosts();
-
-  // Floating Heart
-  const floatingHeart = document.getElementById('floatingHeart');
-  const loveMessage = document.getElementById('loveMessage');
-  floatingHeart.addEventListener('click', ()=>{
-    loveMessage.style.display='block';
-    setTimeout(()=>{loveMessage.style.display='none';},1800);
-  });
+// Floating heart
+const floatingHeart = document.getElementById('floatingHeart');
+const loveMessage = document.getElementById('loveMessage');
+floatingHeart.addEventListener('click', ()=>{
+  loveMessage.style.display='block';
+  setTimeout(()=>{loveMessage.style.display='none';},1800);
+});
 </script>
+
 </body>
 </html>
