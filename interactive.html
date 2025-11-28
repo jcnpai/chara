@@ -8,44 +8,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.28.0/dist/supabase.min.js"></script>
 <style>
-:root{
-  --pink-1:#ff9ac9;
-  --pink-2:#ffe3f2;
-  --accent:#ff4d88;
-  --card:#ffffffee;
-}
-body{margin:0;padding:0;font-family:'Poppins',sans-serif;background:linear-gradient(135deg,var(--pink-1),var(--pink-2));height:100%;}
-.container{max-width:720px;margin:60px auto;padding:22px;background:var(--card);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,0.12);text-align:center;position:relative;}
-h1{font-family:'Dancing Script',cursive;color:#d6336c;margin-bottom:20px;font-size:32px;}
-.mood-section{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:20px;}
-.mood{background:white;padding:10px 16px;border-radius:24px;cursor:pointer;font-weight:600;box-shadow:0 6px 18px rgba(255,0,140,0.08);border:2px solid transparent;transition:transform .18s,box-shadow .18s;}
-.mood:hover{transform:scale(1.06);}
-.mood.selected{border-color:var(--accent);box-shadow:0 8px 20px rgba(255,77,136,0.18);}
-.section-title{font-family:'Dancing Script',cursive;color:#c2185b;margin:20px 0 12px;font-size:26px;}
-.chart-wrap{width:100%;max-width:640px;margin:0 auto 8px;padding:12px;background:#fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);}
-canvas{max-width:100%;}
-textarea{width:92%;max-width:640px;height:110px;padding:12px;border-radius:12px;border:2px solid #ff80b3;box-shadow:0 6px 18px rgba(255,0,140,0.06);font-size:15px;resize:none;margin-top:6px;}
-.btn{display:inline-block;background:var(--accent);color:white;padding:10px 18px;border-radius:24px;border:none;cursor:pointer;margin:12px 6px;font-weight:600;box-shadow:0 8px 18px rgba(255,77,136,0.18);}
-.btn:hover{transform:translateY(-3px);}
-#fwPosts{margin-top:20px;text-align:left;max-height:320px;overflow:auto;padding-right:8px;}
-.fw-post{background:white;padding:12px;border-radius:10px;margin-bottom:10px;box-shadow:0 6px 14px rgba(0,0,0,0.04);}
-.fw-post time{color:#ff6b81;font-weight:600;font-size:13px;}
-.floating-heart{position:fixed;z-index:9999;font-size:62px;left:10%;top:20%;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none;pointer-events:auto;animation:floatAround 12s linear infinite;}
-.floating-heart .heart-text{position:absolute;color:white;font-family:'Dancing Script',cursive;font-size:14px;transform:translateY(6px);}
-@keyframes floatAround{0%{transform:translate(0,0) rotate(0deg);}25%{transform:translate(30vw,6vh) rotate(8deg);}50%{transform:translate(10vw,40vh) rotate(-6deg);}75%{transform:translate(50vw,55vh) rotate(6deg);}100%{transform:translate(0,0) rotate(0deg);}}
-.love-message{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:white;padding:18px 22px;border-radius:16px;box-shadow:0 14px 40px rgba(0,0,0,0.18);font-family:'Dancing Script',cursive;font-size:22px;color:#ff2e6c;opacity:0;pointer-events:none;transition:opacity .25s;}
-.love-message.show{opacity:1;pointer-events:auto;}
-.particle{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:10000;}
-.dev-msg{position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:#ff4d88;color:white;padding:10px 16px;border-radius:12px;font-family:'Dancing Script',cursive;font-size:16px;box-shadow:0 6px 12px rgba(0,0,0,0.15);}
+body {margin:0; padding:0; font-family:'Poppins',sans-serif; background:linear-gradient(135deg,#ff9ac9,#ffe3f2);}
+.container {max-width:720px; margin:40px auto; padding:20px; background:#ffffffee; border-radius:16px; text-align:center;}
+h1 {font-family:'Dancing Script',cursive; color:#d6336c;}
+.mood {padding:10px 16px; margin:6px; border-radius:24px; display:inline-block; background:#fff; border:2px solid transparent; cursor:pointer;}
+.mood.selected {border-color:#ff4d88;}
+textarea {width:90%; height:100px; margin-top:12px; border-radius:12px; border:2px solid #ff80b3; padding:8px; font-size:15px;}
+.btn {padding:10px 18px; background:#ff4d88; color:white; border:none; border-radius:24px; cursor:pointer; margin-top:8px;}
+#fwPosts {margin-top:20px; text-align:left; max-height:200px; overflow:auto;}
+.fw-post {background:#fff; padding:10px; border-radius:10px; margin-bottom:8px;}
+.fw-post time {color:#ff6b81; font-weight:600; font-size:13px;}
+.floating-heart {position:fixed; top:20%; left:10%; font-size:50px; cursor:pointer;}
+.love-message {position:fixed; left:50%; top:50%; transform:translate(-50%,-50%); background:white; padding:16px; border-radius:12px; font-family:'Dancing Script',cursive; font-size:20px; color:#ff2e6c; display:none;}
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="dev-msg">Still under development po huhu 🥺 haha</div>
   <h1>How are you feeling today, Chara?</h1>
-
-  <div class="mood-section" id="moodSection">
+  <div id="moodSection">
     <div class="mood" data-mood="Happy">😊 Happy</div>
     <div class="mood" data-mood="Sad">😔 Sad</div>
     <div class="mood" data-mood="Excited">🤩 Excited</div>
@@ -53,133 +34,92 @@ textarea{width:92%;max-width:640px;height:110px;padding:12px;border-radius:12px;
     <div class="mood" data-mood="Calm">😌 Calm</div>
   </div>
 
-  <div class="section-title">Your Mood History</div>
-  <div class="chart-wrap">
-    <canvas id="moodChart" height="120"></canvas>
-  </div>
+  <h2>Mood History</h2>
+  <canvas id="moodChart" height="120"></canvas>
 
-  <div class="section-title">Freedom Wall</div>
-  <textarea id="fwInput" placeholder="Write anything you feel, Chara…"></textarea>
-  <div>
-    <button class="btn" id="fwSubmit">Post</button>
-  </div>
+  <h2>Freedom Wall</h2>
+  <textarea id="fwInput" placeholder="Write anything you feel, Chara…"></textarea><br>
+  <button class="btn" id="fwSubmit">Post</button>
   <div id="fwPosts"></div>
 </div>
 
-<div id="floatingHeart" class="floating-heart">
-  ❤️
-  <div class="heart-text">Tap me</div>
-</div>
+<div id="floatingHeart" class="floating-heart">❤️</div>
 <div id="loveMessage" class="love-message">I love you always, Chara ❤️</div>
 
 <script>
-  // ===== Supabase config =====
+  // Supabase config
   const SUPABASE_URL = 'https://fhkixsmfjbvwtjrxhbqh.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZoa2l4c21mamJ2d3RqcnhoYnFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzMzg5OTgsImV4cCI6MjA3OTkxNDk5OH0.St5pnyKRpNgBxg7GAyb9HYRmgBRcsL1o0Wa6QUoqJ3Q';
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ===== UI Elements =====
+  // Mood Tracker
   const moodButtons = document.querySelectorAll('.mood');
   const moodChartCtx = document.getElementById('moodChart').getContext('2d');
-  const fwInput = document.getElementById('fwInput');
-  const fwSubmit = document.getElementById('fwSubmit');
-  const fwPosts = document.getElementById('fwPosts');
-  const loveMessage = document.getElementById('loveMessage');
-  const floatingHeart = document.getElementById('floatingHeart');
-
-  // ===== Chart.js setup =====
   const moodLabels = ['Happy','Sad','Excited','Stressed','Calm'];
   let moodCounts = [0,0,0,0,0];
-  const moodChart = new Chart(moodChartCtx,{
-    type:'bar',
-    data:{labels:moodLabels,datasets:[{label:'Times selected',data:moodCounts,backgroundColor:['#ff80b3','#ff99cc','#ff66a3','#ff4d88','#ffb3d9'],borderRadius:8}]},
-    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
+  const moodChart = new Chart(moodChartCtx, {
+    type: 'bar',
+    data: { labels: moodLabels, datasets:[{label:'Times selected', data:moodCounts, backgroundColor:['#ff80b3','#ff99cc','#ff66a3','#ff4d88','#ffb3d9'], borderRadius:8}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{precision:0}}}}
   });
 
-  // ===== Update chart from Supabase =====
   async function updateMoodChart(){
-    const { data,error } = await supabase.from('moods').select('*');
+    const {data,error} = await supabase.from('moods').select('*');
     if(error){console.error(error); return;}
     const counts={Happy:0,Sad:0,Excited:0,Stressed:0,Calm:0};
     data.forEach(d=>{if(d.mood && counts[d.mood]!==undefined) counts[d.mood]++;});
-    moodCounts = moodLabels.map(l=>counts[l]);
-    moodChart.data.datasets[0].data=moodCounts;
+    moodChart.data.datasets[0].data = moodLabels.map(l=>counts[l]);
     moodChart.update();
   }
 
-  // ===== Mood buttons =====
   moodButtons.forEach(btn=>{
     btn.addEventListener('click', async ()=>{
-      const mood=btn.dataset.mood;
+      const mood = btn.dataset.mood;
       btn.classList.toggle('selected');
-      try{
-        await supabase.from('moods').insert([{mood:mood}]);
-        btn.animate([{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:220,easing:'ease-out'});
-        updateMoodChart();
-      }catch(e){console.error('Error saving mood:',e);}
+      await supabase.from('moods').insert([{mood:mood}]);
+      updateMoodChart();
     });
   });
 
   updateMoodChart();
 
-  // ===== Freedom Wall =====
+  // Freedom Wall
+  const fwInput = document.getElementById('fwInput');
+  const fwSubmit = document.getElementById('fwSubmit');
+  const fwPosts = document.getElementById('fwPosts');
+
   async function loadFWPosts(){
-    const { data,error } = await supabase.from('freedomWall').select('*').order('created_at',{ascending:false});
+    const {data,error} = await supabase.from('freedomWall').select('*').order('created_at',{ascending:false});
     if(error){console.error(error); return;}
     fwPosts.innerHTML='';
     data.forEach(d=>{
-      const el=document.createElement('div');
+      const el = document.createElement('div');
       el.className='fw-post';
-      const time=document.createElement('time');
+      const time = document.createElement('time');
       time.textContent = new Date(d.created_at).toLocaleString();
       el.appendChild(time);
-      const p=document.createElement('div');
-      p.style.marginTop='6px';
-      p.textContent=d.text || '';
-      el.appendChild(p);
+      const p = document.createElement('div'); p.textContent = d.text; el.appendChild(p);
       fwPosts.appendChild(el);
     });
   }
 
   fwSubmit.addEventListener('click', async ()=>{
-    const text=fwInput.value.trim();
+    const text = fwInput.value.trim();
     if(!text) return;
-    try{
-      await supabase.from('freedomWall').insert([{text:text}]);
-      fwInput.value='';
-      loadFWPosts();
-    }catch(e){console.error('Error posting:',e);}
+    await supabase.from('freedomWall').insert([{text:text}]);
+    fwInput.value='';
+    loadFWPosts();
   });
 
   loadFWPosts();
 
-  // ===== Floating heart =====
-  floatingHeart.addEventListener('click', (e)=>{
-    popParticles(e.clientX,e.clientY);
-    loveMessage.classList.add('show');
-    setTimeout(()=>loveMessage.classList.remove('show'),1800);
+  // Floating Heart
+  const floatingHeart = document.getElementById('floatingHeart');
+  const loveMessage = document.getElementById('loveMessage');
+  floatingHeart.addEventListener('click', ()=>{
+    loveMessage.style.display='block';
+    setTimeout(()=>{loveMessage.style.display='none';},1800);
   });
-
-  function popParticles(x,y){
-    const colors=['#ff80b3','#ff99cc','#ff66a3','#ff4d88','#ffb3d9','#ffd1e6'];
-    const count=28;
-    for(let i=0;i<count;i++){
-      const p=document.createElement('div');
-      p.className='particle';
-      document.body.appendChild(p);
-      const size=6+Math.random()*10;
-      p.style.width=p.style.height=size+'px';
-      p.style.left=(x-size/2)+'px';
-      p.style.top=(y-size/2)+'px';
-      p.style.background=colors[Math.floor(Math.random()*colors.length)];
-      const angle=Math.random()*Math.PI*2;
-      const distance=40+Math.random()*120;
-      const destX=Math.cos(angle)*distance;
-      const destY=Math.sin(angle)*distance;
-      p.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${destX}px, ${destY}px) scale(0.4)`,opacity:0}],{duration:700+Math.random()*500,easing:'cubic-bezier(.2,.8,.2,1)'});
-      setTimeout(()=>p.remove(),1400);
-    }
-  }
 </script>
 </body>
 </html>
