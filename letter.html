@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I love you, Chara</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Arial", sans-serif;
+    background: linear-gradient(135deg,#fbc2eb,#a6c1ee);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    color: #333;
+}
+
+/* Letter container */
+.letter-container {
+    background: #fff0f8;
+    padding: 30px 25px;
+    border-radius: 20px;
+    max-width: 600px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: scale(0.7) rotateX(30deg);
+    animation: popLetter 1s forwards;
+}
+
+/* Pop & rotate animation */
+@keyframes popLetter {
+    0% { opacity: 0; transform: scale(0.7) rotateX(30deg);}
+    60% { opacity: 1; transform: scale(1.05) rotateX(-10deg);}
+    100% { opacity: 1; transform: scale(1) rotateX(0deg);}
+}
+
+/* Heartbeat decoration */
+.letter-heart {
+    font-size: 50px;
+    color: #ff6b81;
+    margin-bottom: 15px;
+    animation: heartbeat 1.2s infinite;
+}
+
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* Letter text */
+.letter-text {
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: pre-line;
+}
+
+/* Back button */
+.back-btn {
+    display: inline-block;
+    margin-top: 25px;
+    padding: 12px 20px;
+    background: #6b83ff;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.25s;
+}
+.back-btn:hover { background: #4f61d1; }
+</style>
+</head>
+<body>
+
+<div class="letter-container">
+    <div class="letter-heart">💌</div>
+    <div class="letter-text">
+I had some free time at work this week, so I spent it building this website just for you. I hope you will like it. I made it all with love while thinking about you the entire time. Every photo, every song, every detail is my way of showing you how much I care.
+
+I miss everything about you, and the little moments we share. Every day without you feels so long. I know I hurt you before, and I am really sorry. I never wanted you to feel distant or unsure of my love. Chara, I want you to know that whatever happened before will never happen again. I have settled everything, and now I just want a chance to court you properly and show you the love I have been feeling for you all this time.
+
+I am asking for a second chance, not just to fix what happened, but to prove that I can be someone who makes you feel loved, appreciated, and happy. I want to make you smile, laugh, and feel cherished every single day. I promise to be honest, open, and present, and to show you my heart in the way you deserve.
+
+I am looking forward to seeing you next week, but no pressure, it's up to you if you're gonna show up or not, but I'll still be there waiting for you. I just want to introduce myself to you again with pure honesty, no more secrets, no more doubts, just me showing you my love the way it truly is.
+
+You are one of the most important person in my life now, and I will always cherish and love you. I hope this website, this little world I made for you, can show even a small part of how much I really care for you.
+    </div>
+
+    <button class="back-btn" onclick="goBack()">💖 Back</button>
+</div>
+
+<script>
+// Back button returns to Page 2
+function goBack(){
+    window.location.href='main.html';
+}
+</script>
+</body>
+</html>
